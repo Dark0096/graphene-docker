@@ -1,0 +1,8 @@
+cluster.name: metric
+path:
+  data: /data
+  logs: /logs
+
+network:
+  bind_host: _eth0:ipv4_
+  publish_host: localhost

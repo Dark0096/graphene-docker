@@ -1,0 +1,47 @@
+debug: true
+
+logging:
+  level:
+    org.springframework: DEBUG
+    net.iponweb.disthene: DEBUG
+
+graphene:
+  reader:
+    index:
+      name: "metric"
+      cluster:
+        - {{getv "/elasticsearch/cluster"}}
+      port: 9300
+      index: "metric"
+      type: "path"
+      scroll: 50000
+      timeout: 120000
+      maxPaths: 50000
+    store:
+      cluster:
+        - {{getv "/cassandra/cluster"}}
+      port: 9042
+      userName: 'cassandra'
+      userPassword: 'cassandra'
+      keyspace: 'metric'
+      columnFamily: 'metric'
+      maxConnections: 2048
+      readTimeout: 10
+      connectTimeout: 10
+      maxRequests: 128
+      loadBalancingPolicyName: 'TokenDcAwareRoundRobinPolicy'
+      protocolVersion: "V2"
+    throttling:
+      # enable throttling
+      throttlingEnabled: true
+      # total qps limit - i.e. number of allowed requests per second
+      totalQPS: 30
+      #default tenant qps limit
+      defaultQPS: 5
+      # qps per tenant
+      tenants:
+        "my_favorite_tenant": 25
+      #exceptions
+      exceptions:
+        - "testtenant"
+        - "graphite_cluster"

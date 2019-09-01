@@ -1,0 +1,5 @@
+[template]
+prefix = "/graphene"
+src = "application.yml.tmpl"
+dest = "/etc/graphene-reader/application.yml"
+keys = ["/"]

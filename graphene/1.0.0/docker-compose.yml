@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  cassandra:
+    image: launcher.gcr.io/google/cassandra2
+    ports:
+      - 7000:7000
+      - 7199:7199
+      - 9042:9042
+      - 9160:9160
+    environment:
+      CASSANDRA_CLUSTER_NAME: metric
+    container_name: cassandra
+  elasticsearch:
+    image: barnybug/elasticsearch:1.7.2
+    volumes:
+      - ./infra/elasticsearch/1.7/elasticsearch.yml:/elasticsearch/config/elasticsearch.yml
+    ports:
+      - 9200:9200
+      - 9300:9300
+    container_name: elasticsearch
+  graphene-reader:
+    image: dark0096/graphene-reader:1.0.0
+    links:
+      - elasticsearch:elasticsearch
+      - cassandra:cassandra
+    environment:
+      GRAPHENE_CASSANDRA_CLUSTER: cassandra
+      GRAPHENE_ELASTICSEARCH_CLUSTER: 127.0.0.1
+      GRAPHENE_HEAP_OPTS: -Xmx1G -Xms1G
+    ports:
+      - 8080:8080
+    container_name: graphene-reader
