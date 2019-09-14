@@ -2,25 +2,37 @@ debug: true
 
 logging:
   level:
-    org.springframework: {{getv "/log/level" "INFO"}}
-    net.iponweb.disthene: {{getv "/log/level" "INFO"}}
+    org.springframework: DEBUG
+    net.iponweb.disthene: DEBUG
 
 graphene:
-  reader:
-    render:
+  writer:
+    blacklist:
+      'common':
+        - '^xxx_sum.*\.system\..*'
+    carbon:
+      bind: "0.0.0.0"
+      port: 2003
       rollups:
-        - {{getv "/render/rollups" "60s:5356800s"}}
-      humanReadableNumbers: true
+        - 60s:5356800s
+      aggregatorDelay: 90
+      aggregateBaseRollup: false
+    aggregations:
+      'test':
+        - 'xxx_test_server*.<data>': 'xxx_sum.<data>'
+        - 'yyy_test_server*.<data>': 'yyy_sum.<data>'
     index:
       name: "metric"
       cluster:
-        - {{getv "/elasticsearch/cluster"}}
+        - "127.0.0.1"
       port: 9300
       index: "metric"
       type: "path"
-      scroll: 50000
-      timeout: 120000
-      maxPaths: 50000
+      cache: false
+      expire: 3600
+      bulk:
+        actions: 10000
+        interval: 5
     store:
       cluster:
         - {{getv "/cassandra/cluster" "127.0.0.1"}}
@@ -30,22 +42,16 @@ graphene:
       keyspace: {{getv "/store/cassandra/keyspace" "metric"}}
       columnFamily: {{getv "/store/cassandra/columnFamily" "metric"}}
       maxConnections: 2048
+      pool: 1
       readTimeout: 10
       connectTimeout: 10
       maxRequests: 128
       loadBalancingPolicyName: 'TokenDcAwareRoundRobinPolicy'
       protocolVersion: "V2"
-    throttling:
-      # enable throttling
-      throttlingEnabled: true
-      # total qps limit - i.e. number of allowed requests per second
-      totalQPS: 30
-      #default tenant qps limit
-      defaultQPS: 5
-      # qps per tenant
-      tenants:
-        "my_favorite_tenant": 25
-      #exceptions
-      exceptions:
-        - "testtenant"
-        - "graphite_cluster"
+    stats:
+      interval: 60
+      tenant: "NONE"
+      hostname: {{getenv "HOST_NAME"}}
+      log: true
+server:
+  port: 8081

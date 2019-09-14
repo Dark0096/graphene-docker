@@ -20,31 +20,14 @@ services:
       - 9300:9300
     container_name: elasticsearch
   graphene-reader:
-    image: dark0096/graphene-reader:1.0.0
+    image: dark0096/graphene-writer:1.0.0
     links:
       - elasticsearch:elasticsearch
       - cassandra:cassandra
     environment:
       GRAPHENE_CASSANDRA_CLUSTER: cassandra
       GRAPHENE_ELASTICSEARCH_CLUSTER: 127.0.0.1
-      GRAPHENE_LOG_LEVEL: DEBUG
       GRAPHENE_HEAP_OPTS: -Xmx1G -Xms1G
-      GRAPHENE_CONF_DIR: /graphene/conf
-      GRAPHENE_DATA_DIR: /graphene/data
-      GRAPHENE_LOG_DIR: /graphene/log
-      GRAPHENE_PROGRAM_DIR: /graphene/program
     ports:
       - 8080:8080
     container_name: graphene-reader
-  cerebro:
-    image: lmenezes/cerebro:0.8.3
-    ports:
-      - 9000:9000
-    container_name: cerebro
-  grafana:
-    image: grafana/grafana:6.3.5
-    ports:
-      - 80:3000
-    environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin123
-    container_name: grafana

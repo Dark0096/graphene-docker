@@ -3,7 +3,7 @@
 #################################
 #       Set program name        #
 #################################
-export PROGRAM_NAME=graphene-reader
+export PROGRAM_NAME=graphene-writer
 
 #################################
 #   Resolve confd template      #
@@ -58,7 +58,6 @@ export GRAPHENE_HEAP_OPTS=${GRAPHENE_HEAP_OPTS:-"-Xmx1G -Xms1G"}
 #################################
 if [[ -z "$1" ]];
 then
-  # https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html
   exec java $GRAPHENE_HEAP_OPTS -jar ${GRAPHENE_PROGRAM_DIR}/${PROGRAM_NAME}-${GRAPHENE_VERSION}.jar --spring.config.location=file:${GRAPHENE_CONF_DIR}/application.yml >> ${GRAPHENE_LOG_DIR}/${PROGRAM_NAME}.log 2>&1
 else
   exec "$@"
